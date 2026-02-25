@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.png
+*.log
+pressure_test_state.json
+memory/heartbeat-state.json
+# Exclude nested git repos to avoid mess (they should be pushed separately)
+Genesis/
+devasign-app/
+openstatus/
+Cap/
+mergefund-hackathon-kit/

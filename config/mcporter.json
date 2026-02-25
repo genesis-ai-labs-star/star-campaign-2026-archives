@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "genesis": {
+      "baseUrl": "https://genesis-ai-backend.up.railway.app/api/v1/mcp",
+      "auth": "Bearer Jwuy0DIyKwdodvN8tc6WHv8i7th2SMDdpfjUmtdCrbhpWTvW36F_DNKchMKxvpZW"
+    }
+  },
+  "imports": []
+}

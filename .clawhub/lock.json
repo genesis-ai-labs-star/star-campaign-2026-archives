@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "skills": {
+    "us-stock-analysis": {
+      "version": "0.1.1",
+      "installedAt": 1771814890177
+    },
+    "hk-ai-stock-expert": {
+      "version": "1.0.0",
+      "installedAt": 1771814891354
+    },
+    "market-analysis-cn": {
+      "version": "1.0.0",
+      "installedAt": 1771814897232
+    },
+    "equity-analyst": {
+      "version": "1.0.7",
+      "installedAt": 1771814989568
+    },
+    "stock-watcher": {
+      "version": "1.0.0",
+      "installedAt": 1771814991011
+    },
+    "institutional-flow-tracker": {
+      "version": "0.1.0",
+      "installedAt": 1771814992552
+    },
+    "intellectia-stock-forecast": {
+      "version": "1.0.2",
+      "installedAt": 1771814993655
+    },
+    "openclaw-aisa-us-stock-analyst": {
+      "version": "1.0.1",
+      "installedAt": 1771815000849
+    },
+    "openclaw-aisa-finance-stock-equity-crypto-market-price-data-yahoo-finance-coinhacko": {
+      "version": "1.0.0",
+      "installedAt": 1771815002341
+    },
+    "tushare-finance": {
+      "version": "2.0.6",
+      "installedAt": 1771849587197
+    },
+    "finnhub-pro": {
+      "version": "1.0.1",
+      "installedAt": 1771849588347
+    },
+    "agent-team-orchestration": {
+      "version": "1.0.0",
+      "installedAt": 1771849590162
+    },
+    "multi-agent-cn": {
+      "version": "1.2.0",
+      "installedAt": 1771849591745
+    },
+    "agent-services-cn": {
+      "version": "1.0.0",
+      "installedAt": 1771849593479
+    }
+  }
+}

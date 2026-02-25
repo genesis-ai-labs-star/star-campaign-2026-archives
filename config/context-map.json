@@ -1,0 +1,25 @@
+{
+  "last_updated": "Wed Feb 25 03:53:44 EST 2026",
+  "workspaces": {
+    "workspace": {
+      "path": "/Users/genesis/.openclaw/workspace",
+      "latest_memory": "2026-02-24.md",
+      "has_bounties": false,
+      "has_progress": true
+    },
+    "workspace-investor": {
+      "path": "/Users/genesis/.openclaw/workspace-investor",
+      "latest_memory": null,
+      "has_bounties": true,
+      "has_progress": false
+    },
+    "workspace-life": {
+      "path": "/Users/genesis/.openclaw/workspace-life",
+      "latest_memory": "2026-02-25.md",
+      "has_bounties": false,
+      "has_progress": false
+    }
+  },
+  "active_goals": [],
+  "critical_issues": []
+}

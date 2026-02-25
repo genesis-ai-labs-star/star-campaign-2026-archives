@@ -1,0 +1,43 @@
+## Proposal
+
+### Please re-state the problem that we are trying to solve in this issue.
+The app crashes and shows a Generic Error Page (ErrorBoundary) immediately after login on NewDot Web.
+
+### What is the root cause of that problem?
+The crash is caused by partial Onyx hydration during the openApp() bulk write. Specifically, the cardFeedErrors OnyxDerived config (at src/libs/actions/OnyxDerived/configs/cardFeedErrors.ts) processes cards in CARD_LIST as they arrive. 
+
+During this initial hydration, card objects can be written to Onyx without all required fields. Two specific crash vectors exist:
+1. addErrorsForCard() calls getCardFeedWithDomainID(card.bank, ...) where card.bank is undefined. This produces an invalid key like 'undefined_123', corrupting derived state and causing downstream components to throw during render.
+2. addErrorsForPersonalCard() uses card.cardID as an object key. If cardID is missing, it inserts an 'undefined' key into the error map.
+
+These render errors bubble up to the top-level ErrorBoundary in App.tsx, which hides the app and shows the error page.
+
+### What changes do you think we should make in order to solve the problem?
+We should add defensive early-return guards in src/libs/actions/OnyxDerived/configs/cardFeedErrors.ts to skip processing cards that are not yet fully hydrated.
+
+1. In addErrorsForCard, return early if bank or fundID is missing.
+2. In addErrorsForPersonalCard, return early if cardID is missing.
+
+```typescript
+function addErrorsForCard(card: Card) {
+    const bankName = card.bank;
+    const workspaceAccountID = Number(card.fundID);
+    
+    // Guard against partial Onyx hydration
+    if (!bankName || !card.fundID) {
+        return;
+    }
+    // ...
+}
+
+function addErrorsForPersonalCard(card: Card) {
+    // Guard against partial Onyx hydration
+    if (!card.cardID) {
+        return;
+    }
+    // ...
+}
+```
+
+### What alternative solutions did you explore? (Optional)
+I previously submitted a PR (#83287) with this exact fix which was closed due to procedural reasons (submitting PR before being assigned). I have verified this fix locally and it correctly handles the race condition during login hydration.

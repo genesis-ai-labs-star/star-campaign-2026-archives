@@ -1,0 +1,19 @@
+## Proposal
+
+### Please re-state the problem that we are trying to solve in this issue.
+On Android mWeb Chrome, a blue outline (focus ring) unexpectedly appears on the Concierge button after a page refresh and on the back button after navigating to a chat.
+
+### What is the root cause of that problem?
+The issue stems from the interaction between ScreenWrapper's accessibility focus management and global CSS:
+1. ScreenWrapper (at src/components/ScreenWrapper/index.tsx) has a useEffect that programmatically calls .focus() on the first focusable element to assist screen readers on mobile web.
+2. Android Chrome treats programmatic .focus() as a trigger for the :focus-visible pseudo-class.
+3. The global CSS in web/index.html applies a blue box-shadow to any element matching :focus-visible.
+
+### What changes do you think we should make in order to solve the problem?
+We should follow the established pattern in the codebase (used in FloatingActionButton and AttachmentPickerWithMenuItems) to drop the visual focus immediately after the programmatic focus is set for accessibility.
+
+In src/components/ScreenWrapper/index.tsx, within the useEffect that handles shouldMoveAccessibilityFocus, we should call .blur() on the element immediately after calling .focus(). This ensures the accessibility announcement is triggered but the visual focus ring is removed.
+
+### What alternative solutions did you explore? (Optional)
+- Modifying global CSS: Risk of affecting desktop keyboard users.
+- Reverting PR #82518: Analysis shows that PR added semantic roles but didn't change the focus management logic which is the actual driver here.

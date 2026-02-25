@@ -11,7 +11,7 @@ MAX_DISCONNECT_SECONDS=120  # WhatsApp 断连超过2分钟才重启
 BLUEBUBBLES_URL="http://localhost:1234"
 LOG_MAX_BYTES=5242880  # 5MB per log file
 LOG_KEEP=3             # keep 3 rotated copies
-MIN_FREE_MEM_MB=200    # alert if free mem < 200MB
+MIN_FREE_MEM_MB=50    # 只有当可用内存极低时才重启 Gateway，避免误杀
 
 log() {
   echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ') [watchdog] $1" >> "$LOG"
