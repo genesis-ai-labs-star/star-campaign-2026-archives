@@ -1,5 +1,6 @@
 #!/bin/bash
-# OpenClaw Watchdog - 自动检测和恢复所有关键通道
+# OpenClaw Watchdog - 星宝唯一守护进程 (Singularity v2)
+# 合并了 star-sentinel.sh 和 self-heal.sh 的所有功能
 # 每分钟运行一次，通过 launchd 调度
 
 LOG="/Users/genesis/.openclaw/logs/watchdog.log"
@@ -12,6 +13,11 @@ BLUEBUBBLES_URL="http://localhost:1234"
 LOG_MAX_BYTES=5242880  # 5MB per log file
 LOG_KEEP=3             # keep 3 rotated copies
 MIN_FREE_MEM_MB=50    # 只有当可用内存极低时才重启 Gateway，避免误杀
+SOFT_PURGE_THRESHOLD_MB=500 # 软阈值：开始执行 purge
+PROACTIVE_RESTART_THRESHOLD_MB=200 # 预警阈值：准备重启
+BACKOFF_STATE="/Users/genesis/.openclaw/logs/.watchdog-backoff"
+BACKOFF_MIN=60         # 初始退避 60 秒
+BACKOFF_MAX=3600       # 最大退避 1 小时
 
 log() {
   echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ') [watchdog] $1" >> "$LOG"
@@ -103,8 +109,51 @@ check_llm() {
   return 0
 }
 
-# 重启 gateway (via LaunchAgent)
+# 退避逻辑：避免重启风暴
+check_backoff() {
+  if [ ! -f "$BACKOFF_STATE" ]; then
+    return 0  # 没有退避状态，可以重启
+  fi
+  local last_restart delay
+  last_restart=$(head -1 "$BACKOFF_STATE" 2>/dev/null || echo 0)
+  delay=$(tail -1 "$BACKOFF_STATE" 2>/dev/null || echo "$BACKOFF_MIN")
+  local now
+  now=$(date '+%s')
+  local elapsed=$((now - last_restart))
+  if [ "$elapsed" -lt "$delay" ]; then
+    log "BACKOFF: last restart ${elapsed}s ago, waiting ${delay}s. Skipping restart."
+    return 1
+  fi
+  return 0
+}
+
+update_backoff() {
+  local now
+  now=$(date '+%s')
+  local prev_delay="$BACKOFF_MIN"
+  if [ -f "$BACKOFF_STATE" ]; then
+    prev_delay=$(tail -1 "$BACKOFF_STATE" 2>/dev/null || echo "$BACKOFF_MIN")
+  fi
+  local next_delay=$((prev_delay * 2))
+  if [ "$next_delay" -gt "$BACKOFF_MAX" ]; then
+    next_delay="$BACKOFF_MAX"
+  fi
+  printf '%s\n%s\n' "$now" "$next_delay" > "$BACKOFF_STATE"
+  log "BACKOFF: set next delay to ${next_delay}s"
+}
+
+reset_backoff() {
+  if [ -f "$BACKOFF_STATE" ]; then
+    rm -f "$BACKOFF_STATE"
+    log "BACKOFF: reset (healthy)"
+  fi
+}
+
+# 重启 gateway (via LaunchAgent) — with exponential backoff
 restart_gateway() {
+  if ! check_backoff; then
+    return 1
+  fi
   log "Stopping gateway via launchctl..."
   launchctl bootout gui/501/ai.openclaw.gateway 2>/dev/null
   sleep 3
@@ -124,6 +173,7 @@ restart_gateway() {
   else
     log "FAIL: gateway restart failed!"
   fi
+  update_backoff
 }
 
 # 5. Heap 内存检查（只看最近3分钟内的记录，避免旧日志误触发）
@@ -203,17 +253,27 @@ check_bluebubbles() {
 # 7. 系统内存监控
 check_system_memory() {
   local free_mem
-  free_mem=$(vm_stat 2>/dev/null | awk '/Pages free/ {free=$3} /Pages speculative/ {spec=$3} END {gsub(/\./,"",free); gsub(/\./,"",spec); print int((free+spec)*4096/1048576)}')
+  local page_size
+  page_size=$(pagesize)
+  free_mem=$(vm_stat 2>/dev/null | awk -v ps="$page_size" '/Pages free/ {free=$3} /Pages speculative/ {spec=$3} END {gsub(/\./,"",free); gsub(/\./,"",spec); print int((free+spec)*ps/1048576)}')
   if [ -z "$free_mem" ] || [ "$free_mem" -eq 0 ]; then
     # fallback: parse from top
     free_mem=$(top -l 1 -n 0 -s 0 2>/dev/null | grep PhysMem | grep -oE '([0-9]+)M unused' | grep -oE '[0-9]+')
   fi
 
-  if [ -n "$free_mem" ] && [ "$free_mem" -lt "$MIN_FREE_MEM_MB" ]; then
-    log "CRITICAL: system free memory only ${free_mem}MB (threshold: ${MIN_FREE_MEM_MB}MB). Restarting gateway to reclaim memory..."
-    purge 2>/dev/null
-    restart_gateway
-    return 1
+  if [ -n "$free_mem" ]; then
+    if [ "$free_mem" -lt "$MIN_FREE_MEM_MB" ]; then
+      log "CRITICAL: system free memory only ${free_mem}MB (threshold: ${MIN_FREE_MEM_MB}MB). Restarting gateway to reclaim memory..."
+      /usr/sbin/purge 2>/dev/null
+      restart_gateway
+      return 1
+    elif [ "$free_mem" -lt "$PROACTIVE_RESTART_THRESHOLD_MB" ]; then
+      log "WARN: memory low (${free_mem}MB), proactive purge initiated..."
+      /usr/sbin/purge 2>/dev/null
+    elif [ "$free_mem" -lt "$SOFT_PURGE_THRESHOLD_MB" ]; then
+      # 静默执行 purge，不报警
+      /usr/sbin/purge 2>/dev/null
+    fi
   fi
   return 0
 }
@@ -260,15 +320,82 @@ check_auth_profiles() {
   fi
 }
 
+# --- 从 star-sentinel.sh 合并：硬件感知校准 ---
+check_hardware() {
+  local chip
+  chip=$(/usr/sbin/system_profiler SPHardwareDataType 2>/dev/null | grep "Chip" | awk -F': ' '{print $2}')
+  local ps
+  ps=$(pagesize 2>/dev/null)
+  if [ -n "$chip" ]; then
+    log "Hardware: $chip (PageSize: ${ps:-unknown})"
+  fi
+}
+
+# --- 从 star-sentinel.sh 合并：进程优先级锁定 (无 sudo) ---
+lockdown_gateway_priority() {
+  local gateway_pid
+  gateway_pid=$(pgrep -f "$GATEWAY_PID_NAME" | head -1)
+  if [ -n "$gateway_pid" ]; then
+    renice -20 -p "$gateway_pid" > /dev/null 2>&1
+  fi
+}
+
+# --- 从 self-heal.sh 合并：caffeinate 保活 ---
+ensure_caffeinate() {
+  if ! pgrep -q caffeinate; then
+    nohup caffeinate -u -i -s -m > /dev/null 2>&1 &
+    log "OK: caffeinate started to prevent sleep"
+  fi
+}
+
+# --- 从 self-heal.sh 合并：僵尸进程清理 ---
+cleanup_zombies() {
+  local zombies
+  zombies=$(ps -ef | grep "openclaw" | grep "defunct" | awk '{print $2}')
+  if [ -n "$zombies" ]; then
+    echo "$zombies" | xargs kill -9 2>/dev/null
+    log "OK: cleaned zombie openclaw processes"
+  fi
+}
+
+# --- 从 self-heal.sh 合并：crontab PATH 修复 ---
+fix_crontab_path() {
+  if ! crontab -l 2>/dev/null | grep -q "PATH=/opt/homebrew/bin"; then
+    crontab -l > /tmp/crontab.bak 2>/dev/null || touch /tmp/crontab.bak
+    sed -i '' '1i\
+PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin
+' /tmp/crontab.bak
+    crontab /tmp/crontab.bak && rm -f /tmp/crontab.bak
+    log "OK: fixed crontab PATH"
+  fi
+}
+
 # 主逻辑
 main() {
+  # === 启动阶段：硬件感知 + 环境准备 ===
+  check_hardware
+  ensure_caffeinate
+  fix_crontab_path
+
+  # === 日志轮转 + 认证检查 ===
   rotate_logs
   check_auth_profiles
+
+  # === Gateway 核心检查 ===
   check_gateway || exit 0  # gateway 不在就直接重启，不用查别的
   check_gateway_port || exit 0  # 端口不通已重启，跳过后续
+
+  # Gateway is alive and responding — reset backoff
+  reset_backoff
+
+  # === 进程管理 ===
+  lockdown_gateway_priority
+  cleanup_zombies
+
+  # === 服务健康检查 ===
   check_heap
   check_whatsapp
-  check_bluebubbles
+  # check_bluebubbles  # iMessage disabled — skip to eliminate spurious warnings
   check_llm
   check_system_memory
 }

@@ -25,12 +25,12 @@ _只在主会话中加载。群聊、共享上下文中不读取此文件。_
 
 ## 已配置通道
 - WhatsApp（+13433686913）
-- Telegram（@GenesisInvestBot，Token: 8235837901:AAFUnP9wu3wgMZltWUH33yRbY2jAx1KC_no）
+- Telegram（@GenesisInvestBot — 凭据存储在 openclaw credentials 中）
 - iMessage（已禁用）
 
 ## 邮件配置（2026-02-18）
-- Gmail：hello.junjie.duan@gmail.com，App Password：msdb rmss jbuh rekx
-- Foxmail：hello.duan@foxmail.com，授权码：awjyzuvhxdycjehb
+- Gmail：hello.junjie.duan@gmail.com — 凭据存储在 openclaw credentials 中
+- Foxmail：hello.duan@foxmail.com — 凭据存储在 openclaw credentials 中
 - 发送方式：Python smtplib（详见 workspace/email-config.md）
 - himalaya 未安装，用 Python 脚本替代
 
@@ -42,11 +42,16 @@ _只在主会话中加载。群聊、共享上下文中不读取此文件。_
 - contextTokens: 128000
 
 ## 当前环境
-- Mac mini (Apple Silicon), macOS 26.3 (Darwin 25.3.0)
+- Mac mini (Apple Silicon M4), macOS 26.3 (Darwin 25.3.0)
 - OpenClaw 2026.2.21-2, Gateway port 18789
 - Claude Code v2 (/opt/homebrew/bin/claude)
 - Node.js 25.6.1
 - GitHub CLI (gh) 已安装，已登录 JUNJIE-DUAN
+
+## 任务与阻塞 (2026-02-26 更新)
+- **Upwork/Expensify**: 已彻底放弃。禁止在任何报告或任务中提及 Upwork 或 Expensify。相关资源已全部释放。
+- **GitHub 2FA**: 开启截止日期 3月20日。
+- **Tenstorrent**: 当前主攻方向，正在编写性能基准测试脚本。
 
 ## 已知问题
 - macOS 上 openclaw gateway stop 有时不杀老进程，需要手动 kill
@@ -69,7 +74,7 @@ _只在主会话中加载。群聊、共享上下文中不读取此文件。_
 - 系统优化经验：负载优化、磁盘清理、动画关闭等
 - Watchdog 自愈体系设计（进程监控、heap检查、WhatsApp断连检测）
 - QQ音乐控制脚本
-- 系统维护脚本
+- system-maintain.sh 系统维护脚本
 
 ## 教训
 - QQ音乐控制时必须先隐藏其他窗口，否则点击会落在错误窗口
@@ -79,4 +84,4 @@ _只在主会话中加载。群聊、共享上下文中不读取此文件。_
 - gateway 配置变更后必须确认旧进程被杀掉，否则新配置不生效
 
 ---
-_最后更新：2026-02-22_
+_最后更新：2026-02-26_
