@@ -14,3 +14,7 @@
 - **Twitter/X**: 使用 `bird` CLI (需 Cookie 导入)
 - **YouTube**: 使用 `yt-dlp`
 - **GitHub**: 使用 `gh` CLI
+
+## [凭证: Bounty Hunting]
+- **Upwork Profile**: `https://www.upwork.com/freelancers/~012f7d672872004dfd`
+- **Expensify Email**: `genesis.ai.labs.star@gmail.com`

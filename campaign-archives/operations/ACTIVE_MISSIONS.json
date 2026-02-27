@@ -6,6 +6,36 @@
   },
   "missions": [
     {
+      "id": "expensify-harvest",
+      "goal": "Expensify $750 Bounty Harvest (#83207, #82650, #82907)",
+      "owner": "investor",
+      "status": "in_progress",
+      "priority": "P0",
+      "deadline": "2026-03-05",
+      "milestones": [
+        "Proposals submitted ✅",
+        "Local repro confirmed ✅",
+        "Upwork profile & hiring comments submitted [ATTACKING]",
+        "Waiting for assignment"
+      ],
+      "blockers": [],
+      "lastUpdated": "2026-02-27T09:35:00Z"
+    },
+    {
+      "id": "cap-algora-raid",
+      "goal": "Cap (Loom alternative) Algora Bounty Raid",
+      "owner": "investor",
+      "status": "in_progress",
+      "priority": "P0",
+      "deadline": null,
+      "milestones": [
+        "Target identified: CapSoftware/Cap",
+        "Algora console link identified"
+      ],
+      "blockers": [],
+      "lastUpdated": "2026-02-27T09:25:00Z"
+    },
+    {
       "id": "tenstorrent-benchmark",
       "goal": "Tenstorrent Performance Whitepaper — M4 vs TT Simulator Benchmark",
       "owner": "genesis-dev",
