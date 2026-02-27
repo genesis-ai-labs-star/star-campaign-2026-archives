@@ -9,17 +9,16 @@
       "id": "expensify-harvest",
       "goal": "Expensify $750 Bounty Harvest (#83207, #82650, #82907)",
       "owner": "investor",
-      "status": "in_progress",
+      "status": "abandoned",
       "priority": "P0",
       "deadline": "2026-03-05",
       "milestones": [
         "Proposals submitted ✅",
         "Local repro confirmed ✅",
-        "Upwork profile & hiring comments submitted [ATTACKING]",
-        "Waiting for assignment"
+        "Mission abandoned per user instruction [DONE]"
       ],
       "blockers": [],
-      "lastUpdated": "2026-02-27T09:35:00Z"
+      "lastUpdated": "2026-02-27T10:17:00Z"
     },
     {
       "id": "cap-algora-raid",
