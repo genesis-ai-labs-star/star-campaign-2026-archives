@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.1.2",
-    "lastUpdated": "2026-03-01T15:05:00Z",
+    "lastUpdated": "2026-03-01T22:15:00Z",
     "description": "星宝战役全景图 — 七步闭环管理引擎"
   },
   "missions": [
@@ -9,44 +9,47 @@
       "id": "expensify-harvest",
       "goal": "Expensify $750 Bounty Harvest (#83212, #82907)",
       "owner": "prod-architect",
-      "status": "active",
-      "priority": "P0",
+      "status": "archived",
+      "priority": "P2",
       "deadline": "2026-03-05",
       "milestones": [
-        "Proposal #82907 (Negative Amount) - [WAITING REVIEW] ✅",
-        "Proposal #83212 (Onboarding Loop) - [CLARIFICATION POSTED] ✅",
-        "Technical Strike (Code Patches) - [READY TO PUSH]"
+        "Proposal #82907 (Negative Amount) - [ARCHIVED] ✅",
+        "Proposal #83212 (Onboarding Loop) - [ARCHIVED] ✅",
+        "Decision: Abandoned per user instruction (2026-02-27)"
       ],
-      "check_plan": "Every 2 hours: check GitHub comments for maintainer feedback.",
-      "lastUpdated": "2026-03-01T15:05:00Z"
+      "check_plan": "None. Mission concluded.",
+      "lastUpdated": "2026-03-01T19:02:00Z"
     },
     {
       "id": "rel-steward-outreach",
       "goal": "Family Schedule & Welfare Coordination (Yu Li & Ah Tong)",
       "owner": "rel-steward",
-      "status": "active",
+      "status": "completed",
       "priority": "P1",
       "deadline": "2026-03-01",
       "milestones": [
         "WhatsApp outreach complete ✅",
         "Shoe rack delivery confirmed ✅",
         "Sleep order issued to Ah Tong ✅",
-        "Robin Tropper rehearsal coordination (Ah Tong notified) ✅"
+        "Robin Tropper rehearsal coordination (Ah Tong notified) ✅",
+        "Wake-up notification sent to Ah Tong (Lao Duan in SZ) ✅",
+        "Mission cycle closed (2026-03-01) ✅"
       ],
       "check_plan": "Monitor WhatsApp replies; wake Ah Tong upon Lao Duan's arrival in SZ.",
-      "lastUpdated": "2026-03-01T15:05:00Z"
+      "lastUpdated": "2026-03-01T22:15:00Z"
     },
     {
       "id": "hk-sz-transit",
       "goal": "Lao Duan HK-SZ Transit Security & Monitoring",
       "owner": "ops-pilot",
-      "status": "completed",
+      "status": "archived",
       "priority": "P0",
       "deadline": "2026-03-01",
       "milestones": [
         "Weather check (HK/SZ: 23C) ✅",
         "Boat departure (21:00 HK) ✅",
-        "SZ Arrival & Custom clearance (Lao Duan in SZ) ✅"
+        "SZ Arrival & Custom clearance (Lao Duan in SZ) ✅",
+        "Mission archived after successful completion ✅"
       ],
       "check_plan": "Real-time location/status monitoring during transit.",
       "lastUpdated": "2026-03-01T15:05:00Z"
@@ -55,14 +58,32 @@
       "id": "github-2fa",
       "goal": "GitHub 2FA Compliance — Enable 2FA on account",
       "owner": "prod-architect",
-      "status": "ready",
+      "status": "active",
       "priority": "P0",
       "deadline": "2026-03-20",
       "milestones": [
-        "Lao Duan arrived in SZ (Quiet window open) ✅"
+        "Lao Duan arrived in SZ (Quiet window open) ✅",
+        "Mission activated - Waiting for interactive window",
+        "Window identified: Lao Duan in SZ, security session pending ⏳"
       ],
       "check_plan": "Execute during next quiet window (Lao Duan in SZ).",
-      "lastUpdated": "2026-03-01T15:05:00Z"
+      "lastUpdated": "2026-03-01T23:55:00Z"
+    },
+    {
+      "id": "tenstorrent-matmul",
+      "goal": "Tenstorrent Matmul Config Engine ($2,500 Bounty)",
+      "owner": "prod-architect",
+      "status": "active",
+      "priority": "P0",
+      "deadline": "2026-03-15",
+      "milestones": [
+        "M4 Matmul Benchmark established ✅",
+        "tt-metal Environment Setup [IN PROGRESS]",
+        "Local M4 baseline recorded (performance_test.py) ✅",
+        "First Matmul Kernel Result [TARGET: 2026-03-02]"
+      ],
+      "check_plan": "Daily 19:00 audit of environment and kernel progress.",
+      "lastUpdated": "2026-03-01T23:55:00Z"
     },
     {
       "id": "campaign-victory-2026",
@@ -90,6 +111,6 @@
   "system_state": {
     "harden_level": "Singularity v3",
     "privacy_lock": "active",
-    "last_sync": "2026-03-01T15:05:00Z"
+    "last_sync": "2026-03-01T22:15:00Z"
   }
 }
