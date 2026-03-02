@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.1.2",
-    "lastUpdated": "2026-03-01T22:15:00Z",
+    "lastUpdated": "2026-03-02T10:11:00Z",
     "description": "星宝战役全景图 — 七步闭环管理引擎"
   },
   "missions": [
@@ -58,16 +58,48 @@
       "id": "github-2fa",
       "goal": "GitHub 2FA Compliance — Enable 2FA on account",
       "owner": "prod-architect",
-      "status": "active",
+      "status": "completed",
       "priority": "P0",
       "deadline": "2026-03-20",
       "milestones": [
         "Lao Duan arrived in SZ (Quiet window open) ✅",
-        "Mission activated - Waiting for interactive window",
-        "Window identified: Lao Duan in SZ, security session pending ⏳"
+        "Mission activated - Waiting for interactive window ✅",
+        "2FA enabled by Lao Duan (2026-03-02) ✅",
+        "Security compliance achieved ✅"
       ],
-      "check_plan": "Execute during next quiet window (Lao Duan in SZ). Audit: Pending session with Lao Duan.",
-      "lastUpdated": "2026-03-01T23:11:00Z"
+      "check_plan": "Mission completed. Security audit passed.",
+      "lastUpdated": "2026-03-02T02:53:00Z"
+    },
+    {
+      "id": "air-china-mileage",
+      "goal": "Air China (PhoenixMiles) Mileage Claim — 4 Failed Segments",
+      "owner": "rel-steward",
+      "status": "paused",
+      "priority": "P0",
+      "deadline": "2026-03-05",
+      "milestones": [
+        "18 segments submitted (2026-02-28) ✅",
+        "4 segments rejected (incorrect ticket #) ✅",
+        "Re-submission with corrected info (2026-03-02) ✅",
+        "LOOP INCIDENT: Automated re-submission triggered multiple times. Paused for safety. (2026-03-02) ⚠️"
+      ],
+      "check_plan": "MANUAL ONLY. DO NOT AUTOMATE. Audit on/after 2026-03-05.",
+      "lastUpdated": "2026-03-02T13:35:00Z"
+    },
+    {
+      "id": "gcp-billing-audit",
+      "goal": "GCP Billing Audit — Locate and stop unexpected charges",
+      "owner": "prod-architect",
+      "status": "completed",
+      "priority": "P0",
+      "deadline": "2026-03-05",
+      "milestones": [
+        "Charges located (GCP Compute Engine) ✅",
+        "Lao Duan notified (Recommendation: Close billing account) ✅",
+        "Action: Billing issue resolved by Lao Duan (2026-03-02) ✅"
+      ],
+      "check_plan": "Mission completed. Billing stopped.",
+      "lastUpdated": "2026-03-02T14:58:00Z"
     },
     {
       "id": "tenstorrent-matmul",
@@ -80,10 +112,10 @@
         "M4 Matmul Benchmark established ✅",
         "Local M4 baseline recorded (performance_test.py) ✅",
         "tt-metal Environment Setup [IN PROGRESS] ⏳",
-        "First Matmul Kernel Result [TARGET: 2026-03-02]"
+        "First Matmul Kernel Result [TARGET: 2026-03-02 — AT RISK] ⚠️"
       ],
-      "check_plan": "Daily 19:00 audit. Status: M4 baseline done. Next: tt-metal installation and kernel development.",
-      "lastUpdated": "2026-03-01T23:11:00Z"
+      "check_plan": "Daily 19:00 audit. NEXT ACTIONS (P0 TODAY): (1) Complete tt-metal installation on M4, (2) Run a minimal matmul kernel and capture first result, (3) Log performance vs M4 baseline.",
+      "lastUpdated": "2026-03-02T10:11:00Z"
     },
     {
       "id": "campaign-victory-2026",
