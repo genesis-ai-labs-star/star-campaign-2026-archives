@@ -19,10 +19,11 @@
 - **归档私仓**: `genesis-ai-labs-star/campaign-2026-archives`
 
 ## [模型配置]
-- **主模型**: `google/gemini-3-flash-preview`
-- **Fallback 链**: gemini-2.5-flash → gemini-2.5-pro → claude-sonnet-4-6 → gpt-5.2 → ollama (末位)
+- **主模型**: `ollama/qwen3.5:9b` (本地，免费，所有 agent 默认主力)
+- **Fallback 链**: grok-4-1-fast-reasoning → gpt-5.1 → claude-sonnet-4-6
+- **例外**: rel-steward 主力为 `openai/gpt-5.1`
+- **智能路由**: smart-router 插件在网关层按 prompt 内容动态覆盖（详见下方 [插件: Smart Router]）
 - **Claude 注意**: temperature=1 必须配合 thinkingDefault，timeout 需 120s+
-- **Ollama MiniMax**: `minimax-m2.5:cloud`（需 `ollama signin`，当前 401 未认证）
 
 ## [服务: TTS]
 - **Provider**: Edge TTS (免费)
@@ -40,6 +41,29 @@
 - **Upwork Profile**: `https://www.upwork.com/freelancers/~012f7d672872004dfd`
 - **WhatsApp 凭据备份**: `~/.openclaw/credentials/whatsapp-backup-20260222/`
 - **config_safe 备份**: `~/.openclaw/config_safe/`（auth 文件持久化）
+
+## [插件: Smart Router]
+- **路径**: `~/openclaw-smart-router/`
+- **Hook**: `before_model_resolve` (priority 50)，网关层拦截，对 agent 透明
+- **原理**: 纯关键词/正则分类（<1ms），不调用 LLM，按任务类型+复杂度自动选模型
+- **Tier 映射**:
+
+| Tier | 模型 | 触发场景 |
+|------|------|----------|
+| fast | `ollama/qwen3.5:9b` | 简单对话、问答、简单翻译/摘要 |
+| balanced | `anthropic/claude-sonnet-4-6` | 编程(简单)、创意写作、中等翻译/分析 |
+| powerful | `openai/gpt-5.1` | 复杂编程、复杂分析、复杂创意写作 |
+| reasoning | `xai/grok-4-1-fast-reasoning` | 数学推理、证明、逻辑推导 |
+| vision | `openai/gpt-5.1` | 图片理解 |
+| code | `anthropic/claude-sonnet-4-6` | 规则覆盖时触发 |
+
+- **分类类型**: coding, creative_writing, analysis, translation, math_reasoning, simple_qa, image_understanding, summarization, conversation
+- **优先级模式**: balanced（当前）；可选 cost（降级）/ quality（升级）
+- **置信度阈值**: 0.3，低于此值 fall through 到 agent 默认模型
+- **日志**: `logDecisions: true`，所有路由决策写入网关日志
+- **状态**: 已生效，日志可见 `[hooks] model overridden to ...`
+- **配置位置**: `~/.openclaw/openclaw.json` → `plugins.entries.smart-router.config`
+- **注意**: 这是网关层插件，agent 不需要也无法直接操控它；它在 agent 选模型之前介入
 
 ## [已知问题]
 - contextTokens 最低值需 ≥16000
