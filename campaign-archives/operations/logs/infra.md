@@ -1,6 +1,6 @@
 # infra.md - 基础设施层记忆
 
-*最后维护: 2026-03-01 (周维护 by 星宝)*
+*最后维护: 2026-03-03 (sync by Claude Code)*
 
 ## [服务器: Mac mini M4]
 - **OS**: macOS 15 (Darwin 25.3.0)
@@ -10,18 +10,18 @@
 - **磁盘**: 已清理约 180GB（Ollama + DeepSeek R1 7B 卸载）
 
 ## [服务: OpenClaw Gateway]
-- **版本**: 2026.2.26
+- **版本**: 2026.3.2
 - **端口**: 18789
-- **contextTokens**: 128000（修复后，主模型 Gemini 3 Flash 支持 1M+）
+- **contextTokens**: 32768
 - **thinkingDefault**: low
+- **sandbox**: off（已清理旧 sandbox 容器）
 - **Watchdog**: 2.0，每 60s 巡检 (LaunchAgent 管理)，负责 gateway/端口/WhatsApp/内存
 - **Telegram Bot**: @GenesisInvestBot (Token: `8235837901:...`)
 - **归档私仓**: `genesis-ai-labs-star/campaign-2026-archives`
 
-## [模型配置]
-- **主模型**: `ollama/qwen3.5:9b` (本地，免费，所有 agent 默认主力)
-- **Fallback 链**: grok-4-1-fast-reasoning → gpt-5.1 → claude-sonnet-4-6
-- **例外**: rel-steward 主力为 `openai/gpt-5.1`
+## [模型配置]（以 openclaw.json 为准）
+- **已配置 providers**: xai (grok-4-1-fast-reasoning), openai (gpt-5.2), ollama (qwen3.5:9b)
+- **各 agent 主模型/fallback 见 AGENTS.md**
 - **智能路由**: smart-router 插件在网关层按 prompt 内容动态覆盖（详见下方 [插件: Smart Router]）
 - **Claude 注意**: temperature=1 必须配合 thinkingDefault，timeout 需 120s+
 
@@ -51,11 +51,11 @@
 | Tier | 模型 | 触发场景 |
 |------|------|----------|
 | fast | `ollama/qwen3.5:9b` | 简单对话、问答、简单翻译/摘要 |
-| balanced | `anthropic/claude-sonnet-4-6` | 编程(简单)、创意写作、中等翻译/分析 |
-| powerful | `openai/gpt-5.1` | 复杂编程、复杂分析、复杂创意写作 |
+| balanced | `openai/gpt-5.2` | 编程(简单)、创意写作、中等翻译/分析 |
+| powerful | `openai/gpt-5.2` | 复杂编程、复杂分析、复杂创意写作 |
 | reasoning | `xai/grok-4-1-fast-reasoning` | 数学推理、证明、逻辑推导 |
-| vision | `openai/gpt-5.1` | 图片理解 |
-| code | `anthropic/claude-sonnet-4-6` | 规则覆盖时触发 |
+| vision | `openai/gpt-5.2` | 图片理解 |
+| code | `openai/gpt-5.2` | 规则覆盖时触发 |
 
 - **分类类型**: coding, creative_writing, analysis, translation, math_reasoning, simple_qa, image_understanding, summarization, conversation
 - **优先级模式**: balanced（当前）；可选 cost（降级）/ quality（升级）
