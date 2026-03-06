@@ -1,0 +1,134 @@
+digraph deepdive_architecture {
+  rankdir=LR;
+  fontsize=12;
+  labelloc="t";
+  label="Genesis.ai / DeepDive - High-level System Architecture";
+  node [shape=rounded, style=filled, fillcolor="#f9fafb", fontname="Helvetica"];
+  edge [fontname="Helvetica", fontsize=10, color="#555555"];
+
+  subgraph cluster_client {
+    label="Clients & Entry";
+    fontsize=11;
+    style="rounded,dashed";
+    color="#9ca3af";
+    client_web [label="Web Browser\n(Next.js frontend)"];
+    client_3p [label="3rd-party Integrations\n(Webhooks / APIs)"];
+  }
+
+  subgraph cluster_frontend {
+    label="Frontend (Next.js 14)";
+    fontsize=11;
+    style="rounded";
+    color="#3b82f6";
+    fe_app [label="App Router Pages\n(ai-ask / ai-coding / ai-office / ai-research / admin ...)"];
+    fe_bff [label="API Routes (BFF)\n/api/agents /api/ai /api/ai-service ..."];
+  }
+
+  subgraph cluster_backend {
+    label="Backend (NestJS)";
+    fontsize=11;
+    style="rounded";
+    color="#10b981";
+    be_gateway [label="HTTP API Gateway\n(main.ts / app.module.ts)"];
+    be_core [label="Core Services\nauth / admin / email / storage / settings / notifications ..."];
+    be_content [label="Content Layer\nresources / reports / notes / knowledge-graph / workspace ..."];
+    be_ingest [label="Ingestion Layer\ncollectors / crawlers / scheduler / sources"];
+    be_integrations [label="Integrations\nnotion / google-drive / wechat-work / proxy ..."];
+
+    subgraph cluster_ai_engine {
+      label="AI Engine & Apps";
+      fontsize=10;
+      style="rounded,dashed";
+      color="#34d399";
+      be_ai_engine [label="AI Engine Layer\nai-engine (image / long-content / teams)"];
+      be_ai_apps [label="AI Apps Layer\nai-ask / ai-coding / ai-image / ai-office / ai-teams / ai-writing / research / simulation / social / rag"];
+    }
+
+    be_ai_orch [label="AI Orchestration\ncommon/ai-orchestration\n(config + providers)"];
+    be_stream [label="Streaming & SSE\ncommon/streaming"];
+    be_prisma [label="Prisma ORM Service\n(common/prisma)"];
+  }
+
+  subgraph cluster_ai_service {
+    label="AI Service (FastAPI)";
+    fontsize=11;
+    style="rounded";
+    color="#8b5cf6";
+    ai_router [label="FastAPI Routers\nai.py / report.py / trend.py / workspace.py ..."];
+    ai_orchestrator [label="AI Orchestrator\nai_orchestrator.py\nworkspace_pipeline / task_manager"];
+    ai_llm_clients [label="LLM Clients\nopenai_client / grok_client / others"];
+    ai_utils [label="Templates & Utilities\nprecise_citation / template_loader / feature_flags"];
+  }
+
+  subgraph cluster_litellm {
+    label="Model Gateway (litellm-proxy)";
+    fontsize=11;
+    style="rounded,dashed";
+    color="#f97316";
+    llm_proxy [label="LiteLLM Proxy\nMulti-provider routing\n(logging / limits / retries)"];
+  }
+
+  subgraph cluster_data {
+    label="Data & Storage";
+    fontsize=11;
+    style="rounded";
+    color="#6366f1";
+    db_pg [label="PostgreSQL\n(Prisma schema / JSONB rawdata / graph CTEs)"];
+    cache_redis [label="Redis / Caches\n(in-memory state, feature flags)"];
+    store_files [label="Object Storage\nS3 / local files\n(thumbnails, exports, docs, images)"];
+    vec_index [label="Vector / Search Index\n(RAG indexes, full-text)"];
+  }
+
+  subgraph cluster_providers {
+    label="External AI Providers";
+    fontsize=11;
+    style="rounded,dashed";
+    color="#f59e0b";
+    prov_openai [label="OpenAI / GPT"];
+    prov_anthropic [label="Anthropic / Claude"];
+    prov_groq [label="Grok / others"];
+  }
+
+  client_web -> fe_app;
+  client_3p -> fe_bff;
+  fe_app -> fe_bff;
+
+  fe_bff -> be_gateway [label="REST / API calls"];
+
+  be_gateway -> be_core;
+  be_gateway -> be_content;
+  be_gateway -> be_ingest;
+  be_gateway -> be_integrations;
+  be_gateway -> be_ai_engine;
+  be_gateway -> be_ai_apps;
+
+  be_ai_apps -> be_ai_orch;
+  be_ai_engine -> be_ai_orch;
+  be_ai_orch -> be_stream;
+
+  be_ai_orch -> ai_router [label="AI tasks"];
+  fe_bff -> ai_router [label="/api/ai-service"];
+
+  ai_router -> ai_orchestrator;
+  ai_orchestrator -> ai_llm_clients;
+  ai_orchestrator -> ai_utils;
+  ai_llm_clients -> llm_proxy;
+  llm_proxy -> prov_openai;
+  llm_proxy -> prov_anthropic;
+  llm_proxy -> prov_groq;
+
+  be_prisma -> db_pg;
+  be_core -> db_pg;
+  be_content -> db_pg;
+  be_ingest -> db_pg;
+
+  be_core -> store_files;
+  be_content -> store_files;
+
+  be_core -> cache_redis;
+  be_ai_orch -> cache_redis;
+
+  be_content -> vec_index;
+  be_ingest -> vec_index;
+
+}

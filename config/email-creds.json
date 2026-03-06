@@ -1,0 +1,21 @@
+{
+  "genesis": {
+    "email": "genesis.ai.labs.star@gmail.com",
+    "password": "dmai pfxc xxrl vmpt",
+    "smtp": "smtp.gmail.com:587",
+    "note": "星宝专用发件"
+  },
+  "junjie": {
+    "email": "hello.junjie.duan@gmail.com",
+    "password": "vmlm ngsg vorl jqur",
+    "smtp": "smtp.gmail.com:587",
+    "note": "老段主邮箱"
+  },
+  "foxmail": {
+    "email": "hello.duan@foxmail.com",
+    "password": "awjyzuvhxdycjehb",
+    "smtp": "smtp.qq.com:465",
+    "ssl": true,
+    "note": "Foxmail"
+  }
+}

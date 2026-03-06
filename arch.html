@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body { background-color: #1a1a1a; display: flex; justify-content: center; padding: 20px; }
+        .mermaid { background-color: #1a1a1a; }
+    </style>
+</head>
+<body>
+    <div class="mermaid">
+graph TB
+    subgraph L6 [L6 Agent OS - 智能编排层]
+        direction TB
+        Intent[意图路由]
+        Router[智能分发]
+    end
+
+    subgraph L5 [L5 Open API - 开放接口层]
+        direction TB
+        MCP[MCP Server]
+        PublicAPI[Public API]
+    end
+
+    subgraph L4 [L4 AI Apps - 业务应用层]
+        direction TB
+        Research[AI Research]
+        Teams[AI Teams]
+        Office[AI Office]
+        Coding[AI Coding]
+        Writing[AI Writing]
+    end
+
+    subgraph L3 [L3 AI Kernel - 内核层]
+        direction TB
+        Process[进程管理]
+        IPC[进程间通信]
+        Resource[资源调度]
+    end
+
+    subgraph L2 [L2 AI Engine - 核心能力层]
+        direction TB
+        Facade[AIEngineFacade]
+        LLM[LLM Service]
+        Tools[Tools Registry]
+        RAG[RAG Pipeline]
+    end
+
+    subgraph L1 [L1 Infrastructure - 基础设施层]
+        direction TB
+        Auth[Auth/Credits]
+        Storage[Storage/DB]
+    end
+
+    L6 --> L5
+    L5 --> L4
+    L4 --> L3
+    L3 --> L2
+    L2 --> L1
+
+    %% 核心约束
+    L4 -.->|必须通过| Facade
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+</body>
+</html>

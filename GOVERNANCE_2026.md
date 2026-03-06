@@ -1,0 +1,1 @@
+../shared-governance/GOVERNANCE_2026.md

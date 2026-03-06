@@ -10,3 +10,20 @@ devasign-app/
 openstatus/
 Cap/
 mergefund-hackathon-kit/
+
+# One-off scripts banned by GOVERNANCE Rule 10
+check_*.py
+find_*.py
+send_*.py
+test_*.py
+debug_*.py
+deep_*.py
+spam_*.py
+list_*.py
+search_*.py
+download_*.py
+extract_*.py
+get_*.py
+read_*.py
+*.tmp
+*.bak

@@ -1,0 +1,97 @@
+import os
+from dotenv import load_dotenv
+load_dotenv(os.path.expanduser('~/.openclaw/.env'))
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.utils import formataddr
+from datetime import datetime
+
+def send_technical_report():
+    from_email = os.environ['FOXMAIL_USER']
+    password = os.environ['FOXMAIL_PASSWORD']
+    to_email = 'hello.duan@foxmail.com'
+    display_name = '星宝'
+    
+    msg = MIMEMultipart()
+    msg['Subject'] = f"技术洞察报告：MoE 架构与算力网络底层穿透 ｜ {datetime.now().strftime('%Y-%m-%d')}"
+    msg['From'] = formataddr((display_name, from_email))
+    msg['To'] = to_email
+    
+    html_content = f"""
+    <html>
+    <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.6; background-color: #f9f9f9; margin: 0; padding: 20px;">
+        <div style="max-width: 700px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e1e1e1;">
+            
+            <!-- Header -->
+            <div style="border-bottom: 2px solid #1a1a1a; padding-bottom: 20px; margin-bottom: 30px;">
+                <h1 style="font-size: 24px; margin: 0; letter-spacing: 1px; color: #000;">技术洞察报告</h1>
+                <p style="font-size: 12px; color: #666; text-transform: uppercase; margin-top: 5px;">Topic: MoE Architecture & Physical Compute Network</p>
+            </div>
+
+            <!-- Section 1: MoE Physical Entity -->
+            <div style="margin-bottom: 35px;">
+                <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #d32f2f; border-left: 4px solid #d32f2f; padding-left: 10px; margin-bottom: 15px;">01. MoE 的物理实体本质</h3>
+                <p style="font-size: 14px; margin-bottom: 10px;">MoE (Mixture of Experts) 在物理层面并非玄学，而是神经网络结构的<strong>物理拆分与稀疏调用</strong>：</p>
+                <ul style="font-size: 14px; padding-left: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>专家实体：</strong> 每一个 Expert 本质上是一个独立的 <strong>MLP (多层感知机)</strong> 权重矩阵块。</li>
+                    <li style="margin-bottom: 8px;"><strong>显存占用：</strong> 虽然推理时仅激活少数专家，但<strong>全量专家权重必须常驻显存</strong>。这使得 MoE 成为“显存容量型”应用。</li>
+                    <li style="margin-bottom: 8px;"><strong>路由机制：</strong> 物理上表现为一组索引逻辑，根据输入向量特征，在显存地址空间中进行瞬时偏移定位。</li>
+                </ul>
+            </div>
+
+            <!-- Section 2: Token & Vector -->
+            <div style="margin-bottom: 35px;">
+                <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #1976d2; border-left: 4px solid #1976d2; padding-left: 10px; margin-bottom: 15px;">02. Token 与向量的传输形态</h3>
+                <p style="font-size: 14px; margin-bottom: 10px;">在算力网络中，数据不再是文字，而是高维空间的坐标点：</p>
+                <ul style="font-size: 14px; padding-left: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>数据肉身：</strong> 一个 Token 在传输链路上表现为约 <strong>8KB (以 4096 维 BF16 为例)</strong> 的连续内存 Payload。</li>
+                    <li style="margin-bottom: 8px;"><strong>语义表征：</strong> 向量通过 4096 个维度的数值组合，形成唯一的“语义指纹”。</li>
+                    <li style="margin-bottom: 8px;"><strong>空间逻辑：</strong> AI 的推理本质上是坐标点在高维空间中的<strong>位移与聚类</strong>。</li>
+                </ul>
+            </div>
+
+            <!-- Section 3: Network Challenges -->
+            <div style="margin-bottom: 35px;">
+                <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #388e3c; border-left: 4px solid #388e3c; padding-left: 10px; margin-bottom: 15px;">03. 物理算力网络的极端挑战</h3>
+                <p style="font-size: 14px; margin-bottom: 10px;">MoE 将瓶颈从计算单元转移到了<strong>数据交换链路</strong>：</p>
+                <ul style="font-size: 14px; padding-left: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>All-to-All 噩梦：</strong> 不同于传统 All-Reduce (同步梯度) 的确定性，All-to-All 要求极高的对分带宽，用于在不同 GPU 间精准分拣 Token 包。</li>
+                    <li style="margin-bottom: 8px;"><strong>长尾延迟敏感：</strong> MoE 具有极强的同步依赖，网络中任何一根光纤的拥塞都会导致整个千卡集群的 Stall (停顿)。</li>
+                    <li style="margin-bottom: 8px;"><strong>I/O 搬运瓶颈：</strong> DeepSeek 的 DualPath 技术正是为了解决 MoE 专家权重在存储与计算单元间的高速调度问题。</li>
+                </ul>
+            </div>
+
+            <!-- Conclusion -->
+            <div style="background-color: #f4f4f4; padding: 25px; border-radius: 4px; border-left: 4px solid #1a1a1a;">
+                <p style="font-size: 15px; font-weight: 600; margin: 0;">核心结论：</p>
+                <p style="font-size: 14px; margin-top: 10px; color: #333;">MoE 时代的胜负手在于<strong>“连接”</strong>。算力设施的评估标准已从单卡 TFLOPS 演进为<strong>集群对分带宽与无损网络协议的健壮性</strong>。这不仅是技术选型，更是投资逻辑的底层迁移。</p>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: right;">
+                <p style="font-size: 13px; color: #888; font-style: italic;">Generated by 星宝 (Main Agent)</p>
+                <p style="font-size: 12px; color: #aaa; margin-top: 5px;">星宝 AI</p>
+            </div>
+
+        </div>
+    </body>
+    </html>
+    """
+    
+    msg.attach(MIMEText(html_content, 'html'))
+    
+    try:
+        server = smtplib.SMTP_SSL('smtp.qq.com', 465, timeout=30)
+        server.login(from_email, password)
+        server.sendmail(from_email, to_email, msg.as_string())
+        server.quit()
+        print("Technical report email sent successfully.")
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        return False
+
+if __name__ == "__main__":
+    send_technical_report()

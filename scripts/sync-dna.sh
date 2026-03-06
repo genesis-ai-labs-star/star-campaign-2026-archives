@@ -1,73 +1,80 @@
 #!/bin/bash
-# scripts/sync-dna.sh - 意图一致性广播脚本 (Singularity v2)
-# 将主 workspace 的核心治理文件同步到所有子 workspace
-# 由 watchdog 每小时调用，或在文件变更时手动触发
+# scripts/sync-dna.sh - 治理文件符号链接验证器 (Singularity v4)
+# 检查所有 workspace 的治理文件 symlink 是否完好，断链时自动修复
 
 set -euo pipefail
 
-MAIN="/Users/genesis/.openclaw/workspace"
+SHARED="/Users/genesis/.openclaw/shared-governance"
 LOG="/Users/genesis/.openclaw/logs/sync-dna.log"
-TARGETS=(
-  "/Users/genesis/.openclaw/workspace-investor"
-  "/Users/genesis/.openclaw/workspace-life"
-)
 
-# 同步的文件（治理核心 — 所有 Agent 必须一致）
 SYNC_FILES=(
   "GOVERNANCE.md"
+  "GOVERNANCE_2026.md"
+  "WORKFLOW_AUTO.md"
+  "STYLE.md"
+  "SYSTEM_STANDARDS.md"
   "LESSONS.md"
 )
 
-# 条件同步（仅当目标存在时同步）
-SYNC_IF_EXISTS=(
-  "STYLE.md"
-  "SYSTEM_STANDARDS.md"
+# target_dir:relative_prefix pairs (macOS bash 3 compatible)
+PAIRS=(
+  "/Users/genesis/.openclaw/workspace|../shared-governance"
+  "/Users/genesis/.openclaw/workspace/Genesis|../../shared-governance"
+  "/Users/genesis/.openclaw/workspace-investor|../shared-governance"
+  "/Users/genesis/.openclaw/workspace-life|../shared-governance"
+  "/Users/genesis/.openclaw/workspace-rel|../shared-governance"
 )
-
-# 不同步：SOUL.md（各 agent 有自己的灵魂版本）
-# 不同步：MEMORY.md（隐私隔离）
-# 不同步：ACTIVE_MISSIONS.json（由 main agent 统一管理）
 
 log() {
   echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ') [sync-dna] $1" >> "$LOG"
 }
 
-sync_count=0
-skip_count=0
+ok_count=0
+fix_count=0
+fail_count=0
 
-for target in "${TARGETS[@]}"; do
+for pair in "${PAIRS[@]}"; do
+  target="${pair%%|*}"
+  rel="${pair##*|}"
+
   if [ ! -d "$target" ]; then
     log "WARN: target workspace not found: $target"
     continue
   fi
 
-  # 核心治理文件必须同步
   for file in "${SYNC_FILES[@]}"; do
-    if [ -f "$MAIN/$file" ]; then
-      if ! cmp -s "$MAIN/$file" "$target/$file" 2>/dev/null; then
-        cp "$MAIN/$file" "$target/$file"
-        log "SYNCED: $file -> $target"
-        sync_count=$((sync_count + 1))
-      else
-        skip_count=$((skip_count + 1))
-      fi
-    else
-      log "WARN: source file missing: $MAIN/$file"
-    fi
-  done
+    link_path="$target/$file"
+    expected_target="$rel/$file"
 
-  # 条件同步
-  for file in "${SYNC_IF_EXISTS[@]}"; do
-    if [ -f "$MAIN/$file" ]; then
-      if ! cmp -s "$MAIN/$file" "$target/$file" 2>/dev/null; then
-        cp "$MAIN/$file" "$target/$file"
-        log "SYNCED: $file -> $target"
-        sync_count=$((sync_count + 1))
-      else
-        skip_count=$((skip_count + 1))
-      fi
+    # Check if it's already a correct symlink
+    if [ -L "$link_path" ] && [ "$(readlink "$link_path")" = "$expected_target" ] && [ -r "$link_path" ]; then
+      ok_count=$((ok_count + 1))
+      continue
+    fi
+
+    # Needs repair: remove whatever is there and recreate symlink
+    if [ ! -f "$SHARED/$file" ]; then
+      log "ERROR: source missing: $SHARED/$file"
+      fail_count=$((fail_count + 1))
+      continue
+    fi
+
+    rm -f "$link_path"
+    ln -sf "$expected_target" "$link_path"
+
+    if [ -r "$link_path" ]; then
+      log "FIXED: $link_path -> $expected_target"
+      fix_count=$((fix_count + 1))
+    else
+      log "ERROR: failed to fix $link_path"
+      fail_count=$((fail_count + 1))
     fi
   done
 done
 
-log "Complete: ${sync_count} files synced, ${skip_count} already up-to-date"
+log "Complete: ${ok_count} ok, ${fix_count} fixed, ${fail_count} errors"
+
+if [ "$fail_count" -gt 0 ]; then
+  echo "sync-dna: ${fail_count} errors detected, check $LOG" >&2
+  exit 1
+fi

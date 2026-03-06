@@ -1,41 +1,12 @@
-# TOOLS.md - Available Tools
+# TOOLS.md
 
-**Use tools directly. Never say "I can't" when a tool exists for it.**
+用工具干活，别说"我做不到"。
 
-## AI Search (Tavily & Serper)
-- **Tavily**: `/Users/genesis/.openclaw/workspace-investor/tavily_search.sh "query"` (Best for AI-optimized content)
-- **Serper**: `/Users/genesis/.openclaw/workspace-investor/serper_search.sh "query"` (Best for raw Google Search results)
+- **exec** — Shell 命令 (Mac mini, Apple Silicon, macOS 15, America/Toronto)
+- **web_fetch/web_search** — 联网
+- **message** — 发消息到其他通道（回复当前对话直接输出文字）
+- 邮件用 himalaya skill 或 Python smtplib（禁止用 macOS mail 命令）
+- 邮件凭据在 `~/.openclaw/workspace/config/email-creds.json`
+- Claude Code 通过 ACPX 调用，不要直接 exec claude
 
-## Core Tools
-- **web_fetch** — Read any public URL, extract text
-- **web_search** — Search the web
-- **message** — Send to OTHER channels/people (NOT current conversation; just output text to reply)
-- **exec** — Run shell commands on this Mac mini (macOS 15, Apple Silicon)
-
-## Quick Reference (via exec)
-
-| Task | Command |
-|------|---------|
-| Weather | `curl -s "wttr.in/萧山?format=3"` |
-| A股行情 | `curl -s "https://hq.sinajs.cn/list=sh600519" \| iconv -f GBK -t UTF-8` |
-| Translation | `trans :zh "text"` or `trans :en "中文"` |
-| Screenshot | `screencapture -x ~/Desktop/screenshot.png` |
-| TTS | `say -v Ting-Ting "你好"` |
-| File search | `rg "pattern" /path` or `fd "name" /path` |
-
-## Document Generation (Python via exec)
-- PPT: `python-pptx` | Excel: `openpyxl` | PDF: `fpdf2` | Charts: `matplotlib`
-- Calendar/Reminders: `osascript` (AppleScript)
-- Video/Audio: `ffmpeg`, `yt-dlp`
-- QR: `qrencode`
-
-## Environment
-- Mac mini (Apple Silicon), macOS 15, 杭州/萧山, Asia/Shanghai (GMT+8)
-- Channels: iMessage, WhatsApp, Telegram
-- Phone: +13433686913 | Email: hello.junjie.duan@gmail.com
-
-## Rules
-1. **Search first, ask never.** Always use tools before saying you can't.
-2. **One reply only.** Output text directly. Do NOT also call `message` tool (= duplicate).
-3. **Match user's language.** Chinese → Chinese. English → English.
-4. **Be direct.** Do it, don't offer to do it.
+规则：直接做，不要问。一条回复，不要重复发。

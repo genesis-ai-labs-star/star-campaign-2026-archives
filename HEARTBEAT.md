@@ -1,10 +1,10 @@
 # HEARTBEAT.md - Periodic Check-in
 
-Runs every 30m.
+Runs every 60m.
 
 ## Every Heartbeat
-- Evolution: `/Users/genesis/.openclaw/workspace/scripts/self-heal.sh`
 - System load: `top -l 1 -n 0 -s 0 | head -5` — alert if load>8 or free mem<200MB
+- **Campaign Archive Check**: Ensure `scripts/archive-results.sh` runs if significant milestones are reached.
 
 - If nothing notable → reply `HEARTBEAT_OK`
 

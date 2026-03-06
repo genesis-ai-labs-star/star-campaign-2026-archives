@@ -22,22 +22,17 @@ while true; do
         fi
     done
 
-    # 3. 触发系统级内存清理 (仅清理缓存，不模拟压力)
-    # 废弃 memory_pressure -l warn，因为它会分配大量内存导致系统崩溃
-    sync && purge
+    # 3. 检查系统剩余内存，仅在低于阈值时 purge（watchdog 已有每分钟检查）
+    FREE_PAGES=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
+    SPEC_PAGES=$(vm_stat | grep "Pages speculative" | awk '{print $3}' | sed 's/\.//')
+    PAGE_SIZE=$(pagesize)
+    FREE_MB=$(( (FREE_PAGES + SPEC_PAGES) * PAGE_SIZE / 1024 / 1024 ))
 
-
-    # 4. 检查系统剩余内存，如果低于 300MB，尝试清理磁盘缓存
-    FREE_MEM=$(vm_stat | grep "free" | awk '{print $3}' | sed 's/\.//')
-    # vm_stat 输出的是 page count，每页通常是 4096 bytes
-    FREE_MB=$((FREE_MEM * 4096 / 1024 / 1024))
-    
-    if [ "$FREE_MB" -lt 300 ]; then
-        echo "$(date) [purger] Critical: Free memory $FREE_MB MB. Purging disk cache..." >> "$LOG_FILE"
-        # purge 命令可以安全地清空磁盘缓冲区和未使用的内存页
-        sync && purge
+    if [ "$FREE_MB" -lt 200 ]; then
+        echo "$(date) [purger] Low memory: ${FREE_MB}MB free. Purging..." >> "$LOG_FILE"
+        sync && /usr/sbin/purge
     fi
 
-    # 每 5 分钟巡检一次
-    sleep 300
+    # 每 30 分钟巡检一次（Mac 上 500MB free 是正常的，无需频繁检查）
+    sleep 1800
 done
