@@ -26,7 +26,7 @@
 | Telegram | invest | finance |
 | Telegram | dev | dev |
 | Telegram | life | life |
-| WhatsApp | default | life |
+| WhatsApp | default | circle |
 
 ---
 _同步自 openclaw.json，最后更新：2026-03-06_

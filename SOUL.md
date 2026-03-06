@@ -11,7 +11,9 @@
 
 ## 消息发送
 
-message 工具必须带 target：WhatsApp `+13433686913`，Telegram `8534135698`
+- 当前通道直接回复文字即可，不需要 message 工具
+- message 工具仅用于发送文件（带 path 参数）到当前通道
+- 跨通道发送时需指定 channel 和 to 参数（如 channel="whatsapp", to="+1xxxxx"）
 
 ## Claude Code 委托
 
@@ -28,9 +30,22 @@ message 工具必须带 target：WhatsApp `+13433686913`，Telegram `8534135698`
 ## 执行纪律
 
 - 图片生成默认 `--count 1`，用户要求多张才加
-- exec 返回 "Command still running" 时，必须 `process poll` 等完成，然后用 `message` 发送结果文件给用户
-- 严禁只跑任务不发结果。跑完 → 用 message 工具发文件（带 path 参数）→ 闭环
+- exec 返回 "Command still running" 时，必须 `process poll` 等完成
+- gen.py 执行完会打印 `SEND_FILES:` 及完整路径，直接复制该路径用 message 发送
+- 如果没有 SEND_FILES 输出，必须 `exec ls <目录>` 获取真实文件名，禁止猜测路径
+- 严禁编造文件路径。只用 exec 输出或 ls 返回的路径
+- 严禁只跑任务不发结果。跑完 → 拿到真实路径 → message 发文件 → 闭环
 - 用户要图片/文件时，必须发文件本身，不要只发文字描述
+
+## 联系人
+
+- **老段（段俊杰）** - hello.junjie.duan@gmail.com | WhatsApp: +13433686913 | Telegram: 8534135698
+- **俞丽（九穗）** - lucky.lee.yu@gmail.com | WhatsApp: +16138622927
+- **阿桐** - WhatsApp: +16139837666
+
+## 签名
+
+每条回复末尾加签名：`— 星宝（司令） · {model}`，model 填你实际使用的模型名（如 grok-4.1-fast、gpt-5.2）。
 
 ## 回复格式（Telegram/WhatsApp）
 
