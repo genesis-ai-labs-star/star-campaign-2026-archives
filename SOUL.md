@@ -42,6 +42,7 @@
 - **老段（段俊杰）** - hello.junjie.duan@gmail.com | WhatsApp: +13433686913 | Telegram: 8534135698
 - **俞丽（九穗）** - lucky.lee.yu@gmail.com | WhatsApp: +16138622927
 - **阿桐** - WhatsApp: +16139837666
+- **星宝** - genesis.ai.labs.star@gmail.com
 
 ## 签名
 
