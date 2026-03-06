@@ -1,15 +1,24 @@
 node_modules/
 .DS_Store
-*.png
 *.log
 pressure_test_state.json
 memory/heartbeat-state.json
-# Exclude nested git repos to avoid mess (they should be pushed separately)
+
+# Nested git repos (push separately)
 Genesis/
+deepdive-engine/
 devasign-app/
 openstatus/
 Cap/
 mergefund-hackathon-kit/
+reach-deploy/
+
+# Generated images
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
 
 # One-off scripts banned by GOVERNANCE Rule 10
 check_*.py
@@ -27,10 +36,3 @@ get_*.py
 read_*.py
 *.tmp
 *.bak
-deepdive-engine/
-reach-deploy/
-*.png
-*.jpg
-*.jpeg
-*.webp
-
