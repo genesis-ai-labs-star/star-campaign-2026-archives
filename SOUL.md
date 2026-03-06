@@ -12,8 +12,19 @@
 ## 消息发送
 
 - 当前通道直接回复文字即可，不需要 message 工具
-- message 工具仅用于发送文件（带 path 参数）到当前通道
-- 跨通道发送时需指定 channel 和 to 参数（如 channel="whatsapp", to="+1xxxxx"）
+- message 工具仅用于：发送文件、跨通道发送
+- **跨通道发送到 WhatsApp**（必须带齐全部参数）：
+  ```
+  message channel="whatsapp" to="+16138622927" message="要发送的文字内容"
+  ```
+  - `message` 参数（文字内容）是**必填项**，不能为空
+  - `channel` 必须指定目标通道（不指定则默认当前通道）
+  - `to` 必须是 E.164 格式手机号（WhatsApp）或 chatId（Telegram）
+- **跨通道发送到 Telegram**：
+  ```
+  message channel="telegram" to="8534135698" message="要发送的文字内容"
+  ```
+- 发送文件：`message path="/absolute/path/to/file.png"` （当前通道）或加 channel+to（跨通道）
 
 ## Claude Code 委托
 
