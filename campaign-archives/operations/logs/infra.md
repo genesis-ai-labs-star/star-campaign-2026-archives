@@ -1,6 +1,6 @@
 # infra.md - 基础设施层记忆
 
-*最后维护: 2026-03-03 (sync by Claude Code)*
+*最后维护: 2026-03-08 (周维护 by 星宝)*
 
 ## [服务器: Mac mini M4]
 - **OS**: macOS 15 (Darwin 25.3.0)
@@ -12,7 +12,7 @@
 ## [服务: OpenClaw Gateway]
 - **版本**: 2026.3.2
 - **端口**: 18789
-- **contextTokens**: 32768
+- **contextTokens**: 32768 (当前记录；历史上曾扩到 128k 做过全量修复)
 - **thinkingDefault**: low
 - **sandbox**: off（已清理旧 sandbox 容器）
 - **Watchdog**: 2.0，每 60s 巡检 (LaunchAgent 管理)，负责 gateway/端口/WhatsApp/内存
