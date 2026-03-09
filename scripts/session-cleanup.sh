@@ -12,11 +12,10 @@ MEMORY_DIR="$OPENCLAW_DIR/memory"
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Session cleanup starting..."
 
-# 1. Delete interactive session .jsonl files older than 7 days
-echo "Cleaning interactive sessions (>7 days)..."
-find "$AGENTS_DIR" -name "*.jsonl" -mtime +7 -type f -delete 2>/dev/null
-INTERACTIVE_COUNT=$(find "$AGENTS_DIR" -name "*.jsonl" -mtime +7 -type f 2>/dev/null | wc -l | tr -d ' ')
-echo "  Remaining old interactive sessions: $INTERACTIVE_COUNT"
+# 1. Proper session store cleanup (removes store entries + transcripts together)
+echo "Running openclaw sessions cleanup --enforce across all agents..."
+/opt/homebrew/bin/openclaw sessions cleanup --all-agents --enforce --fix-missing 2>&1
+echo "  Session store cleanup done"
 
 # 2. Delete all .jsonl.deleted.* remnants (any age)
 echo "Cleaning .jsonl.deleted.* remnants..."
@@ -31,6 +30,16 @@ if [ -d "$CRON_RUNS_DIR" ]; then
     find "$CRON_RUNS_DIR" -name "*.jsonl" -mtime +3 -type f -delete 2>/dev/null
     echo "  Removed $CRON_COUNT old cron run logs"
 fi
+
+# 4. Archive oversized transcripts (>1MB) to prevent compaction timeout
+echo "Archiving oversized session transcripts (>1MB)..."
+ARCHIVE_DIR="$AGENTS_DIR/star/sessions/archived"
+mkdir -p "$ARCHIVE_DIR"
+find "$AGENTS_DIR" -maxdepth 3 -name "*.jsonl" -size +1M -type f ! -path "*/archived/*" 2>/dev/null | while read -r f; do
+    BASENAME=$(basename "$f")
+    mv "$f" "$ARCHIVE_DIR/$BASENAME"
+    echo "  Archived: $BASENAME ($(du -h "$ARCHIVE_DIR/$BASENAME" | cut -f1))"
+done
 
 # 4. Vacuum SQLite memory stores
 echo "Vacuuming SQLite memory stores..."
