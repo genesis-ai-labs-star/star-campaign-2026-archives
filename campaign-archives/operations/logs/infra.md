@@ -1,6 +1,6 @@
 # infra.md - 基础设施层记忆
 
-*最后维护: 2026-03-15 (周维护 by 星宝)*
+*最后维护: 2026-03-22 (周维护 by 星宝)*
 
 ## [服务器: Mac mini M4]
 - **OS**: macOS 15 (Darwin 25.3.0)
@@ -70,3 +70,6 @@
 - WhatsApp 在 gateway 重启时可能出现 "pairing required"，通常自动恢复
 - Ollama cloud 版需 `ollama signin`，当前未认证
 - 13GB 本地大模型在 115k+ context 下不可用（SIGKILL/内存锁死）
+- [2026-03-22] OpenAI embeddings API key 持续无效 (401) 自03-12起，memory_search 不可用
+- [2026-03-18] Gateway 短暂 down 后自恢复，无需人工干预
+- [2026-03-22] 系统全周稳定：Load avg <2.0, CPU idle >84%, 8 cron jobs 零失败

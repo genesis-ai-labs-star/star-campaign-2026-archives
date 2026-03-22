@@ -1,6 +1,6 @@
 # projects.md - 项目层记忆
 
-*最后维护: 2026-03-15 (周维护 by 星宝)*
+*最后维护: 2026-03-22 (周维护 by 星宝)*
 
 ## [项目: Campaign 2026]
 - **目标**：全年净收益 $10,000+，建立 Singularity v3.0 零干预底座。
@@ -33,8 +33,15 @@
 - **目标**：$2,500 赏金任务。
 - **当前状态**：预研/基准测试阶段。M4 基准已建立，待 tt-metal 环境集成。
 
+## [项目: Todo App]
+- **目标**：Claude Code spec-driven 交付演示。
+- **当前状态**：完成。
+- **关键里程碑**：
+  - [2026-03-16] 纯HTML单文件todo-app生成，714行，响应式+离线，零bug。
+
 ## [待办]
-- [ ] 开启 GitHub 2FA（期限 3月20日）
+- [ ] 开启 GitHub 2FA（已过期限 3月20日，需尽快处理）
 - [ ] `openclaw doctor --repair` LaunchAgent 配置修复
 - [ ] Ollama MiniMax cloud 版 `ollama signin` 认证
 - [ ] tt-metal 环境集成 (Tenstorrent 任务)
+- [ ] OpenAI embeddings API key 修复（memory_search 自03-12不可用）
